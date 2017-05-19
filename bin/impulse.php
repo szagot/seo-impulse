@@ -2,7 +2,7 @@
 /**
  * Serviço de otimização de imagens e compactação de CSS em massa
  *
- *      Uso: php vendor/bin/impulse.php pasta/desejada [-r]
+ *      Uso: vendor/bin/impulse pasta/desejada [-r]
  *      Obs: o modificador "-r" é opcional. Quando usado, SEO Impulse irá buscar imagens nas subpastas também.
  *
  * @author    Daniel Bispo <daniel@tmw.com.br>
@@ -29,10 +29,14 @@ if (! is_dir($path)) {
     die(str_replace('Uso correto do comando', 'Caminho inválido', $msgDefault));
 }
 
-require_once __DIR__ . DIRECTORY_SEPARATOR .
-    '..' . DIRECTORY_SEPARATOR .
-    'vendor' . DIRECTORY_SEPARATOR .
-    'autoload.php';
+$autoloadFiles = array(__DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php');
+
+foreach ($autoloadFiles as $autoloadFile) {
+    if (file_exists($autoloadFile)) {
+        require_once $autoloadFile;
+    }
+}
 
 echo PHP_EOL . 'Convertendo arquivos...' . PHP_EOL . PHP_EOL;
 

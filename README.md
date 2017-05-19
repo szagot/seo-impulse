@@ -4,13 +4,13 @@ Compacta CSS e imagens (jpg, png e gif) de uma pasta (e/ou subpastas) e os otimi
 ## Uso
 No _bash_ digite:
 
-    php vendor/bin/impulse.php pasta/desejada [-r]
+    vendor/bin/impulse pasta/desejada [-r]
 
 **Obs:** o modificador "-r" é opcional. Quando usado, SEO Impulse irá buscar imagens nas subpastas também.
 
 ### Exemplo
     
-    php vendor/bin/impulse.php ./themes -r
+    vendor/bin/impulse ./themes -r
 
 
 

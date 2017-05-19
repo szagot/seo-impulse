@@ -19,6 +19,7 @@
     "intervention/image": "^2.3"
   },
   "bin": [
+    "bin/impulse",
     "bin/impulse.php"
   ]
 }
