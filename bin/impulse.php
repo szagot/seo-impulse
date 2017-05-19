@@ -11,13 +11,16 @@
 
 $msgDefault = PHP_EOL .
     'Uso correto do comando.  Utilize assim:' . PHP_EOL . PHP_EOL .
-    '    php optimize_images.php caminho/desejado [-r]' . PHP_EOL . PHP_EOL .
-    'Obs: o modificador "-r" é opcional. Quando usado, o otimizador irá buscar imagens nas subpastas também.' .
-    PHP_EOL;
+    '    vendor/bin/impulse pasta/desejada [-r]' . PHP_EOL . PHP_EOL .
+    'Obs: o modificador "-r" é opcional. Quando usado, o otimizador irá buscar imagens nas subpastas também.' . PHP_EOL;
 
 // Verifica se foram passados parâmetros
 if ($argc == 1) {
     die($msgDefault);
+}
+
+if (in_array(['--help', '-h'], $argv) || in_array('-h', $argv)) {
+    die(str_replace('Uso correto do comando. ', '', $msgDefault));
 }
 
 // É recursivo?
@@ -29,8 +32,10 @@ if (! is_dir($path)) {
     die(str_replace('Uso correto do comando', 'Caminho inválido', $msgDefault));
 }
 
-$autoloadFiles = array(__DIR__ . '/../vendor/autoload.php',
-    __DIR__ . '/../../../autoload.php');
+$autoloadFiles = [
+    __DIR__ . '/../vendor/autoload.php',
+    __DIR__ . '/../../../autoload.php',
+];
 
 foreach ($autoloadFiles as $autoloadFile) {
     if (file_exists($autoloadFile)) {
