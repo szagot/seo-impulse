@@ -1,0 +1,24 @@
+{
+  "name": "szagot/impulse",
+  "description": "Compacta CSS e imagens (jpg, png e gif) de uma pasta (e/ou subpastas) e os otimiza para web. (PHP / Command Line)",
+  "keywords": [
+    "php",
+    "php7",
+    "command-line",
+    "images",
+    "css"
+  ],
+  "authors": [
+    {
+      "name": "Daniel Bispo",
+      "email": "szago@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^7.0",
+    "intervention/image": "^2.3"
+  },
+  "bin": [
+    "bin/impulse.php"
+  ]
+}

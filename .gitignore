@@ -1,0 +1,52 @@
+# Código compilado #
+####################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Arquivos Temporários #
+########################
+~$*
+.~*#
+.tmb
+desktop.ini
+
+# Compactados #
+###############
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs e Databases #
+####################
+*/logs/*
+*.log
+*.sql
+*.sqlite
+*.db
+
+# IDE #
+#######
+.metadata
+.idea
+.DS_Store
+.DS_Store?
+*_notes*
+.project
+nbproject
+
+# Composer #
+############
+composer.lock
+
+# Deste Projeto #
+#################
+vendor/
