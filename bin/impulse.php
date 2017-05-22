@@ -12,12 +12,14 @@
 $msgDefault = PHP_EOL .
     'Uso incorreto do comando.  Utilize assim:' . PHP_EOL . PHP_EOL .
     '    vendor/bin/impulse pasta/desejada [-r] [--q:80] [--w:100] [--h:100] [--json:caminho/lista_arquivos.json]' . PHP_EOL . PHP_EOL .
-    'Obs: O modificador "-r" é opcional. Quando usado, o otimizador irá buscar imagens nas subpastas também.' . PHP_EOL .
+    'Obs: O modificador "-r" é opcional. Quando usado, o Impulse irá buscar imagens nas subpastas também.' . PHP_EOL .
     '     Igualmente, o modificador "--json" é opcional. Quando usado, ' .
-    'o otimizador irá otimizar apenas os arquivos informados.' . PHP_EOL .
+    'o Impulse irá otimizar apenas os arquivos informados.' . PHP_EOL .
     '     Já o modificador "--w" e "--h", também opcionais, indicam respectivamente a largura e altura máxima ' .
     'quando o arquivo for uma imagem. Estes devem conter apenas números.' . PHP_EOL .
-    '     E o modificador "--q" define a qualidade, onde 1 é muito baixa e 100 é qualidade máxima (padrão = 80).' . PHP_EOL;
+    '     E o modificador "--q" define a qualidade, onde 1 é muito baixa e 100 é qualidade máxima (padrão = 80).' . PHP_EOL . PHP_EOL .
+    'Para restaurar os backups, use:' . PHP_EOL . PHP_EOL .
+    '    vendor/bin/impulse pasta/desejada --restore' . PHP_EOL;
 
 // Verifica se foram passados parâmetros
 if ($argc == 1) {
@@ -31,6 +33,9 @@ if (in_array('--help', $argv)) {
 
 // É recursivo?
 $isRecursive = in_array('-r', $argv);
+
+// É para restaurar
+$isRestore = in_array('--restore', $argv);
 
 // Definida lista
 $isJson = false;
@@ -87,7 +92,7 @@ foreach ($autoloadFiles as $autoloadFile) {
 echo PHP_EOL . 'Convertendo arquivos...' . PHP_EOL . PHP_EOL;
 
 // Iniciando leitura do diretório
-optimizeImages(new \DirectoryIterator($path), $isRecursive, $quality, $width, $height, $jsonList);
+optimizeImages(new \DirectoryIterator($path), $isRecursive, $isRestore, $quality, $width, $height, $jsonList);
 
 echo PHP_EOL . PHP_EOL . 'Finalizado.' . PHP_EOL . PHP_EOL;
 
@@ -97,6 +102,7 @@ echo PHP_EOL . PHP_EOL . 'Finalizado.' . PHP_EOL . PHP_EOL;
  *
  * @param DirectoryIterator $dir
  * @param Bool              $isRecursive
+ * @param bool              $isRestore
  * @param int               $quality
  * @param int               $width
  * @param int               $height
@@ -105,6 +111,7 @@ echo PHP_EOL . PHP_EOL . 'Finalizado.' . PHP_EOL . PHP_EOL;
 function optimizeImages(
     \DirectoryIterator $dir,
     $isRecursive = false,
+    $isRestore = false,
     $quality = 80,
     $width = null,
     $height = null,
@@ -118,31 +125,55 @@ function optimizeImages(
         $pathFile = $fileInfo->getPath();
         $fileName = $fileInfo->getFilename();
         $pathFileName = $pathFile . '/' . $fileName;
+
+        // Se for arquivo de backup, pula
+        $ext = strtolower($fileInfo->getExtension());
+        if ($ext == 'impulse') {
+            continue;
+        }
+
         // Se for diretório e não for '.' ou '..'
         if ($fileInfo->isDir() && !$fileInfo->isDot()) {
             // Esrá no modo recursivo?
             if ($isRecursive) {
                 // Le as imagens da pasta seguinte
-                optimizeImages(new \DirectoryIterator($pathFileName), $isRecursive, $quality, $width, $height,
+                optimizeImages(
+                    new \DirectoryIterator($pathFileName),
+                    $isRecursive,
+                    $isRestore,
+                    $quality,
+                    $width,
+                    $height,
                     $jsonList);
             }
             continue;
         }
 
+        // Verifica se é pra restaurar
+        if ($isRestore && !$fileInfo->isDir() && !$fileInfo->isDot()) {
+            if (restore($pathFileName)) {
+                echo ' ♥ [RES] - ' . $pathFileName . PHP_EOL;
+                echo '           Arquivo restaurado' . PHP_EOL;
+            }
+            continue;
+        }
+
         // Verifica se a extensão é de uma imagem
-        $ext = strtolower($fileInfo->getExtension());
         if (in_array($ext, $imgs)) {
 
             // Verifica se tem uma lista definida
             if (!empty($jsonList)) {
                 // Verifica se o nome do arquivo está na lista. Se não estiver, pula
                 // Para aceitar todas as imagens, coloque no arquivo '*.img'
-                if (!in_array($fileInfo->getFilename(), $jsonList) && ! in_array('*.img', $jsonList)) {
+                if (!in_array($fileInfo->getFilename(), $jsonList) && !in_array('*.img', $jsonList)) {
                     continue;
                 }
             }
 
             echo ' • [IMG] - ' . $pathFileName . PHP_EOL;
+
+            // Cria backup
+            beforeOptimize($pathFileName);
 
             // Pega tamanho antes da alteração
             $sizeBefore = round($fileInfo->getSize() / 1024, 2);
@@ -177,13 +208,16 @@ function optimizeImages(
             if (!empty($jsonList)) {
                 // Verifica se o nome do arquivo está na lista. Se não estiver, pula
                 // Para aceitar todas as imagens, coloque no arquivo '*.css'
-                if (!in_array($fileInfo->getFilename(), $jsonList) && ! in_array('*.css', $jsonList)) {
+                if (!in_array($fileInfo->getFilename(), $jsonList) && !in_array('*.css', $jsonList)) {
                     continue;
                 }
             }
 
             // Compacta CSS
             echo ' ♦ [CSS] - ' . $pathFileName . PHP_EOL;
+
+            // Cria backup
+            beforeOptimize($pathFileName);
 
             // Lê o arquivo
             $cod = file_get_contents($pathFileName);
@@ -208,4 +242,44 @@ function optimizeImages(
             }
         }
     }
+}
+
+/**
+ * Cria backup se não existir
+ *
+ * @param $filePath
+ *
+ * @return bool
+ */
+function beforeOptimize($filePath)
+{
+    $backFile = $filePath . '.impulse';
+
+    // Verifica se já não tem o backup
+    if (file_exists($backFile)) {
+        return true;
+    }
+
+    // Faz o backup
+    return copy($filePath, $backFile);
+}
+
+/**
+ * Restaura o backup do arquivo
+ *
+ * @param $filePath
+ *
+ * @return bool
+ */
+function restore($filePath)
+{
+    $backFile = $filePath . '.impulse';
+
+    // Verifica se tem o backup
+    if (!file_exists($backFile)) {
+        return true;
+    }
+
+    // Restaura o backup
+    return copy($backFile, $filePath) && unlink($backFile);
 }
