@@ -3,6 +3,14 @@ Compacta CSS e imagens (jpg, png e gif) de uma pasta (e/ou subpastas) e os otimi
 
 Para cada imagem otimizada será criado um arquivo de backup (se o mesmo ainda não existir) no mesmo diretório da imagem original.
 
+## Instalação
+
+    composer require szagot/impulse
+
+Ou, adicione a seguinte linha no seu **composer.json**, conforme versão desejada:
+ 
+    "szagot/impulse": "~1.0"
+
 ## Uso
 No _bash_ digite:
 
