@@ -31,6 +31,8 @@ if (in_array('--help', $argv)) {
     die(str_replace('Uso incorreto do comando. ', '', $msgDefault));
 }
 
+// TODO: verificar se todos os comandos são válidos
+
 // É recursivo?
 $isRecursive = in_array('-r', $argv);
 
@@ -43,7 +45,14 @@ $jsonList = [];
 $quality = 80;
 $width = null;
 $height = null;
-foreach ($argv as $arg) {
+$erro = '';
+foreach ($argv as $index => $arg) {
+    // Verifica se tem comando inválido
+    if ($index > 1 && !preg_match('/^(-r|--restore|--q:[0-9]+|--w:[0-9]+|--h:[0-9]+|--json:.+)$/', $arg)) {
+        $erro = $arg;
+        break;
+    }
+
     // Localizada solicitação JSON
     if (preg_match('/^--json:(.+)$/', $arg, $matches)) {
         $pathJson = $matches[1];
@@ -70,6 +79,10 @@ foreach ($argv as $arg) {
     if (preg_match('/^--h:([0-9]+)$/', $arg, $matches)) {
         $height = $matches[1];
     }
+}
+
+if (!empty($erro)) {
+    die(str_replace('Uso incorreto do comando', "Parâmetro [$erro] inválido", $msgDefault));
 }
 
 // Verifica se a pasta existe

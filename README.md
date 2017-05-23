@@ -21,8 +21,8 @@ No _bash_ digite:
  - `[-r]` Fazer a otimização (ou restauração - vide `[--restore]`) recursivamente (incluir subpastas)
  - `[--restore]` Restaura o backup das imagens
  - `[--q:[0-9]+]` Altera a qualidade padrão (80%) para a desejada
- - `[--w:[0-9]+]` Altera a largura para o máximo desejado
- - `[--h:[0-9]+]` Altera a altura para o máximo desejado
+ - `[--w:[0-9]+]` Altera a largura para o máximo desejado (Mantém a proporção)
+ - `[--h:[0-9]+]` Altera a altura para o máximo desejado (Mantém a proporção)
  - `[--json:caminho/arquivo.json]` Arquivo JSON com uma lista de arquivos a serem otimizados
  
 **Obs**: Quando quiser otimizar todos as imagens, mas especificar o css, use "*.img" no arquivo JSON
@@ -40,6 +40,10 @@ No _bash_ digite:
     
     $ vendor/bin/impulse ./themes --w:100 --q:50
     Otimiza todas as imagens da pasta "themes" redimensionando para no máximo 100px de largura, com qualidade de 50%
+
+**Obs**: Na pasta `/test` do projeto, foi executado o comando:
+    
+    $ vendor/bin/impulse ./test/img -r --w:100 --h:100 --q:20 --json:./test/teste.json
 
 _Desenvolvido e Utilizado pela plataforma de e-Commerce TMWxD_
 http://wiki.tmw.com.br/
