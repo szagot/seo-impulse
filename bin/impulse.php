@@ -81,6 +81,7 @@ foreach ($argv as $index => $arg) {
     }
 }
 
+// Houve comando inválido?
 if (!empty($erro)) {
     die(str_replace('Uso incorreto do comando', "Parâmetro [$erro] inválido", $msgDefault));
 }
