@@ -44,6 +44,3 @@ No _bash_ digite:
 **Obs**: Na pasta `/test` do projeto, foi executado o comando:
     
     $ vendor/bin/impulse ./test/img -r --w:100 --h:100 --q:20 --json:./test/teste.json
-
-_Desenvolvido e Utilizado pela plataforma de e-Commerce TMWxD_
-http://wiki.tmw.com.br/
