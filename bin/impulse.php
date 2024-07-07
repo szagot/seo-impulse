@@ -5,8 +5,7 @@
  *      Uso: vendor/bin/impulse pasta/desejada [-r]
  *      Obs: o modificador "-r" é opcional. Quando usado, SEO Impulse irá buscar imagens nas subpastas também.
  *
- * @author    Daniel Bispo <daniel@tmw.com.br>
- * @copyright Copyright (c) 2017, TMW E-commerce Solutions
+ * @author Daniel Bispo <szagot@gmail.com>
  */
 
 $msgDefault = PHP_EOL .
